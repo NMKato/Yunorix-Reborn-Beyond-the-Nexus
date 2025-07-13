@@ -324,9 +324,9 @@ class GameScene: ObservableObject {
         guard let player = playerCharacter, cameraFollowsPlayer else { return }
         
         let playerPos = player.worldPosition
-        let cameraX = playerPos.x + cos(cameraAngle) * cameraDistance
+        let cameraX = playerPos.x + Float(cos(cameraAngle) * cameraDistance)
         let cameraY = playerPos.y + 6.0
-        let cameraZ = playerPos.z + sin(cameraAngle) * cameraDistance
+        let cameraZ = playerPos.z + Float(sin(cameraAngle) * cameraDistance)
         
         cameraNode.position = SCNVector3(cameraX, cameraY, cameraZ)
         cameraNode.look(at: playerPos)
@@ -363,7 +363,7 @@ class GameScene: ObservableObject {
         // Check player
         if let player = playerCharacter {
             let distance = simd_distance(simd_float3(player.worldPosition), simd_float3(position))
-            if distance < threshold {
+            if Double(distance) < threshold {
                 player.setSelected(true)
                 return player
             } else {
@@ -374,7 +374,7 @@ class GameScene: ObservableObject {
         // Check enemies
         for enemy in enemies {
             let distance = simd_distance(simd_float3(enemy.worldPosition), simd_float3(position))
-            if distance < threshold {
+            if Double(distance) < threshold {
                 enemy.setSelected(true)
                 return enemy
             } else {
@@ -423,7 +423,7 @@ class GameScene: ObservableObject {
     
     func optimizePerformance() {
         // Level of detail based on distance from camera
-        guard let cameraPos = cameraNode.position else { return }
+        let cameraPos = cameraNode.position
         
         for node in worldNodes {
             let distance = simd_distance(simd_float3(node.position), simd_float3(cameraPos))

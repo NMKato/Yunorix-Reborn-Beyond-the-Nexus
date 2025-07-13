@@ -130,11 +130,7 @@ class Mage: Hero, ManaUser, Healable, AreaAttacker, StatusEffectCaster {
     var availableStatusEffects: [CharacterStatus] = [.cursed, .paralyzed]
     
     // MARK: - ManaUser Protocol Compliance
-    
-    var mana: Double {
-        get { return currentMana }
-        set { currentMana = newValue }
-    }
+    // Uses inherited mana property from Character
     
     // MARK: - Initialization
     

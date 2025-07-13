@@ -45,6 +45,11 @@ class Character: ObservableObject, CustomStringConvertible, Identifiable {
         set { manaPoints = newValue }
     }
     
+    var mana: Double {
+        get { return manaPoints }
+        set { manaPoints = newValue }
+    }
+    
     var maxMana: Double {
         get { return maxManaPoints }
         set { maxManaPoints = newValue }

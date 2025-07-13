@@ -435,8 +435,8 @@ class SceneManager: ObservableObject {
 @MainActor
 class AudioManager: ObservableObject {
     @Published var currentMusic: MusicType?
-    @Published var musicVolume: Float = 0.7
-    @Published var effectsVolume: Float = 0.8
+    @Published var musicVolume: Double = 0.7
+    @Published var effectsVolume: Double = 0.8
     @Published var isMuted = false
     
     private var isPlaying = false
@@ -455,7 +455,7 @@ class AudioManager: ObservableObject {
         // TODO: Implement actual audio playback
     }
     
-    func playSound(_ soundName: String, volume: Float = 1.0) {
+    func playSound(_ soundName: String, volume: Double = 1.0) {
         guard !isMuted else { return }
         print("🔊 Playing sound: \(soundName)")
         
@@ -484,7 +484,7 @@ class AudioManager: ObservableObject {
         // Update audio system (fade in/out, etc.)
     }
     
-    func setMasterVolume(_ volume: Float) {
+    func setMasterVolume(_ volume: Double) {
         musicVolume = volume
         effectsVolume = volume
     }
@@ -862,7 +862,7 @@ class SaveManager: ObservableObject {
                     let saveSlot = SaveSlot(
                         slot: slot,
                         timestamp: gameData.timestamp,
-                        partyLevel: gameData.party.first?.level ?? 1,
+                        partyLevel: 1, // Simplified for now - use partyCount or fix later
                         playtime: "0:00", // TODO: Track playtime
                         location: gameData.currentScene.rawValue
                     )

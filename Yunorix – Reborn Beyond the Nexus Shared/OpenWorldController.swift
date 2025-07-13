@@ -31,15 +31,15 @@ class OpenWorldController: NSObject, ObservableObject {
     private var cameraTarget = SCNVector3Zero
     
     // World properties
-    private let worldSize: Float = 50.0  // 50x50 meter open world
-    private let playerSpeed: Float = 5.0
-    private let cameraHeight: Float = 8.0
-    private let cameraDistance: Float = 12.0
+    private let worldSize: Double = 50.0  // 50x50 meter open world
+    private let playerSpeed: Double = 5.0
+    private let cameraHeight: Double = 8.0
+    private let cameraDistance: Double = 12.0
     
     // Game state
     @Published var playerPosition = SCNVector3Zero
-    @Published var playerHealth: Float = 100.0
-    @Published var playerMana: Float = 100.0
+    @Published var playerHealth: Double = 100.0
+    @Published var playerMana: Double = 100.0
     @Published var collectedItems: Int = 0
     @Published var gameMessage = "Explore the open world!"
     
@@ -202,16 +202,16 @@ class OpenWorldController: NSObject, ObservableObject {
         for i in 0..<30 {
             // Trees
             let tree = createTree()
-            let x = Float.random(in: -worldSize/2...worldSize/2)
-            let z = Float.random(in: -worldSize/2...worldSize/2)
+            let x = Float.random(in: -Float(worldSize)/2...Float(worldSize)/2)
+            let z = Float.random(in: -Float(worldSize)/2...Float(worldSize)/2)
             tree.position = SCNVector3(x, 0, z)
             worldNode.addChildNode(tree)
             
             // Rocks
             if i < 15 {
                 let rock = createRock()
-                let rockX = Float.random(in: -worldSize/2...worldSize/2)
-                let rockZ = Float.random(in: -worldSize/2...worldSize/2)
+                let rockX = Float.random(in: -Float(worldSize)/2...Float(worldSize)/2)
+                let rockZ = Float.random(in: -Float(worldSize)/2...Float(worldSize)/2)
                 rock.position = SCNVector3(rockX, 0, rockZ)
                 worldNode.addChildNode(rock)
             }
@@ -297,8 +297,8 @@ class OpenWorldController: NSObject, ObservableObject {
         // Spawn collectible items throughout the world
         for i in 0..<25 {
             let collectible = createCollectible()
-            let x = Float.random(in: -worldSize/2 + 5...worldSize/2 - 5)
-            let z = Float.random(in: -worldSize/2 + 5...worldSize/2 - 5)
+            let x = Float.random(in: -Float(worldSize)/2 + 5...Float(worldSize)/2 - 5)
+            let z = Float.random(in: -Float(worldSize)/2 + 5...Float(worldSize)/2 - 5)
             collectible.position = SCNVector3(x, 1.5, z)
             
             worldNode.addChildNode(collectible)
@@ -342,8 +342,8 @@ class OpenWorldController: NSObject, ObservableObject {
         // Spawn enemies that patrol the world
         for i in 0..<8 {
             let enemy = createEnemy()
-            let x = Float.random(in: -worldSize/2 + 10...worldSize/2 - 10)
-            let z = Float.random(in: -worldSize/2 + 10...worldSize/2 - 10)
+            let x = Float.random(in: -Float(worldSize)/2 + 10...Float(worldSize)/2 - 10)
+            let z = Float.random(in: -Float(worldSize)/2 + 10...Float(worldSize)/2 - 10)
             enemy.position = SCNVector3(x, 1, z)
             
             worldNode.addChildNode(enemy)
@@ -450,9 +450,9 @@ class OpenWorldController: NSObject, ObservableObject {
         guard isMoving else { return }
         
         let deltaMovement = SCNVector3(
-            movementDirection.x * playerSpeed * Float(deltaTime),
+            movementDirection.x * Float(playerSpeed) * Float(deltaTime),
             0,
-            movementDirection.z * playerSpeed * Float(deltaTime)
+            movementDirection.z * Float(playerSpeed) * Float(deltaTime)
         )
         
         let newPosition = SCNVector3(
@@ -462,10 +462,11 @@ class OpenWorldController: NSObject, ObservableObject {
         )
         
         // Clamp to world bounds
+        let worldBound = Float(worldSize)/2
         let clampedPosition = SCNVector3(
-            max(-worldSize/2 + 2, min(worldSize/2 - 2, newPosition.x)),
+            max(-worldBound + 2, min(worldBound - 2, newPosition.x)),
             newPosition.y,
-            max(-worldSize/2 + 2, min(worldSize/2 - 2, newPosition.z))
+            max(-worldBound + 2, min(worldBound - 2, newPosition.z))
         )
         
         playerNode.position = clampedPosition
@@ -476,8 +477,8 @@ class OpenWorldController: NSObject, ObservableObject {
         // Third-person camera that follows player
         let targetPosition = SCNVector3(
             playerNode.position.x,
-            playerNode.position.y + cameraHeight,
-            playerNode.position.z + cameraDistance
+            playerNode.position.y + Float(cameraHeight),
+            playerNode.position.z + Float(cameraDistance)
         )
         
         // Smooth camera movement

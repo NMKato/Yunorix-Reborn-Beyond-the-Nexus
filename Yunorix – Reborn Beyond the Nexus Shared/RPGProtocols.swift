@@ -9,6 +9,7 @@ import Foundation
 
 // MARK: - Core Combat Protocols
 
+@MainActor
 protocol Attackable {
     var attackPower: Double { get set }
     var attacks: [String] { get }
@@ -16,6 +17,7 @@ protocol Attackable {
     func showAttackMenu()
 }
 
+@MainActor
 protocol Defendable {
     var defenseValue: Double { get set }
     var isDefending: Bool { get set }
@@ -23,10 +25,12 @@ protocol Defendable {
     func calculateReducedDamage(_ incomingDamage: Double) -> Double
 }
 
+@MainActor
 protocol AreaAttacker {
     func areaAttack(targets: [Character], damage: Double)
 }
 
+@MainActor
 protocol Healable {
     func heal(target: Character, amount: Double)
     func canHeal(target: Character) -> Bool
@@ -34,6 +38,7 @@ protocol Healable {
 
 // MARK: - Special Ability Protocols
 
+@MainActor
 protocol ManaUser {
     var mana: Double { get set }
     var maxMana: Double { get }
@@ -42,16 +47,19 @@ protocol ManaUser {
     func hasEnoughMana(_ requiredMana: Double) -> Bool
 }
 
+@MainActor
 protocol StatusEffectCaster {
     var availableStatusEffects: [CharacterStatus] { get }
     func applyStatusEffect(_ effect: CharacterStatus, to target: Character, duration: Int?)
 }
 
+@MainActor
 protocol StatusResistant {
     var resistances: [CharacterStatus] { get }
     func isResistantTo(_ status: CharacterStatus) -> Bool
 }
 
+@MainActor
 protocol Summoner {
     var maxSummons: Int { get }
     var summonedCharacters: [Character] { get set }
@@ -61,12 +69,14 @@ protocol Summoner {
 
 // MARK: - Control Protocols
 
+@MainActor
 protocol PlayerControlled {
     func showActionMenu()
     func processPlayerInput(_ input: String) -> Bool
     func performPlayerTurn(against availableTargets: [Character])
 }
 
+@MainActor
 protocol AIControlled {
     func chooseRandomAction(availableTargets: [Character]) -> String
     func performAITurn(against targets: [Character])

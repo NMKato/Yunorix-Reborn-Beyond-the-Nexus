@@ -219,11 +219,11 @@ class SoundManager: ObservableObject {
     
     @Published var musicEnabled = true
     @Published var soundEffectsEnabled = true
-    @Published var masterVolume: Float = 1.0
+    @Published var masterVolume: Double = 1.0
     
     private init() {}
     
-    func playSound(_ soundName: String, volume: Float = 1.0) {
+    func playSound(_ soundName: String, volume: Double = 1.0) {
         guard soundEffectsEnabled else { return }
         // TODO: Implement sound playback
         print("🔊 Playing sound: \(soundName)")
@@ -240,7 +240,7 @@ class SoundManager: ObservableObject {
         print("🔇 Stopping all sounds")
     }
     
-    func setMasterVolume(_ volume: Float) {
+    func setMasterVolume(_ volume: Double) {
         masterVolume = max(0.0, min(1.0, volume))
         // TODO: Apply volume to all audio
     }

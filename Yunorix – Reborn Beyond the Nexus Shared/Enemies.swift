@@ -283,8 +283,6 @@ class Dragon: Enemy, AreaAttacker, StatusEffectCaster, ManaUser {
     
     // MARK: - Dragon Properties
     
-    @Published var mana: Double
-    @Published var maxMana: Double
     @Published var isFlying: Bool = false
     @Published var flightDuration: Int = 0
     var dragonScale: Double = 0.2
@@ -294,10 +292,11 @@ class Dragon: Enemy, AreaAttacker, StatusEffectCaster, ManaUser {
     // MARK: - Initialization
     
     init() {
-        self.maxMana = 80
-        self.mana = 80
-        
         super.init(name: "Drache", maxHP: 150, attack: 20, defense: 15, difficulty: .hard)
+        
+        // Set mana after super.init
+        self.maxManaPoints = 80
+        self.manaPoints = 80
         
         self.attacks = ["Feueratem", "Klauenhieb", "Schwanzschlag", "Fliegen"]
         self.specialAbilities = ["area_attack", "status_attack", "heal"]

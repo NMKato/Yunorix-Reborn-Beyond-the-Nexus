@@ -210,8 +210,8 @@ class TutorialController: ObservableObject {
         return currentStep >= tutorialSteps.count
     }
     
-    var progress: Float {
-        return Float(currentStep) / Float(tutorialSteps.count)
+    var progress: Double {
+        return Double(currentStep) / Double(tutorialSteps.count)
     }
 }
 
