@@ -81,11 +81,7 @@ class SceneKitCharacter: Character {
             modelNode = SCNNode(geometry: geometry)
             
             // Color based on character type
-            if self is Hero {
-                geometry.firstMaterial?.diffuse.contents = SCNColor.blue
-            } else {
-                geometry.firstMaterial?.diffuse.contents = SCNColor.red
-            }
+            geometry.firstMaterial?.diffuse.contents = SCNColor.blue
             
             node.addChildNode(modelNode!)
         }
@@ -483,38 +479,51 @@ class SceneKitEnemy: SceneKitCharacter {
 // MARK: - Specialized Hero Classes
 
 @MainActor
-class SceneKitMage: SceneKitHero, ManaUser, Healable, AreaAttacker {
+class SceneKitMage: SceneKitHero {
     
-    @Published var mana: Double
-    @Published var maxMana: Double
     var spellPower: Double
     var manaBarNode: SCNNode?
     
+    // Use inherited mana properties from Character base class
+    
     init(name: String) {
-        self.maxMana = 100
-        self.mana = 100
         self.spellPower = 15
         
         super.init(name: name, maxHP: 80, attack: 12, defense: 5, modelName: "mage")
+        
+        // Set mana after super.init
+        self.maxManaPoints = 100
+        self.manaPoints = 100
         
         setupManaBar()
         addMagicalEffects()
     }
     
-    // MARK: - ManaUser Protocol Implementation
+    // MARK: - Mana Management
     
     func consumeMana(_ amount: Double) -> Bool {
-        guard mana >= amount else { return false }
-        mana -= amount
+        guard currentMana >= amount else { return false }
+        currentMana -= amount
+        updateManaBar()
         return true
     }
     
     func regenerateMana(_ amount: Double) {
-        mana = min(mana + amount, maxMana)
+        currentMana = min(currentMana + amount, maxMana)
+        updateManaBar()
     }
     
     func hasEnoughMana(_ requiredMana: Double) -> Bool {
-        return mana >= requiredMana
+        return currentMana >= requiredMana
+    }
+    
+    private func updateManaBar() {
+        guard let manaBar = manaBarNode,
+              let geometry = manaBar.geometry as? SCNPlane else { return }
+        
+        let manaPercentage = currentMana / maxMana
+        let newWidth = 1.0 * manaPercentage
+        geometry.width = CGFloat(newWidth)
     }
     
     private func setupManaBar() {
@@ -600,7 +609,7 @@ class SceneKitMage: SceneKitHero, ManaUser, Healable, AreaAttacker {
 }
 
 @MainActor
-class SceneKitWarrior: SceneKitHero, StatusResistant, Defendable {
+class SceneKitWarrior: SceneKitHero {
     
     @Published var shield: Double
     @Published var maxShield: Double
@@ -675,12 +684,13 @@ class SceneKitWarrior: SceneKitHero, StatusResistant, Defendable {
 }
 
 @MainActor
-class SceneKitRogue: SceneKitHero, StatusEffectCaster {
+class SceneKitRogue: SceneKitHero {
     
     @Published var stealth: Bool = false
     @Published var stealthDuration: Int = 0
     var agility: Double
     var availableStatusEffects: [CharacterStatus] = [.poisoned, .paralyzed]
+    var resistances: [CharacterStatus] = []
     
     init(name: String) {
         self.agility = 18

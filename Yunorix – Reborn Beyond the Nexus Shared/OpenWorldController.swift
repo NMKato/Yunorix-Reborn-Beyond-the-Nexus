@@ -7,11 +7,14 @@
 
 import SceneKit
 import SwiftUI
-import RealityKit
 import GameplayKit
 
+#if canImport(RealityKit)
+import RealityKit
+#endif
+
 @MainActor
-class OpenWorldController: ObservableObject {
+class OpenWorldController: NSObject, ObservableObject {
     
     // MARK: - Core Properties
     

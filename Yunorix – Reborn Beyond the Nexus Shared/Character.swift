@@ -8,13 +8,16 @@
 import Foundation
 
 @MainActor
-class Character: ObservableObject, CustomStringConvertible {
+class Character: ObservableObject, CustomStringConvertible, Identifiable {
     
     // MARK: - Core Properties
     
+    let id = UUID()
     @Published var name: String
     @Published var healthPoints: Double
     @Published var maxHealthPoints: Double
+    @Published var manaPoints: Double = 100.0
+    @Published var maxManaPoints: Double = 100.0
     @Published var currentStatus: CharacterStatus = .healthy
     @Published var activeStatusEffects: [StatusEffectInstance] = []
     
@@ -24,6 +27,28 @@ class Character: ObservableObject, CustomStringConvertible {
     var defenseValue: Double
     var criticalChance: Double = 0.1
     var isDefending: Bool = false
+    
+    // MARK: - Computed Properties for Compatibility
+    
+    var currentHealth: Double {
+        get { return healthPoints }
+        set { healthPoints = newValue }
+    }
+    
+    var maxHealth: Double {
+        get { return maxHealthPoints }
+        set { maxHealthPoints = newValue }
+    }
+    
+    var currentMana: Double {
+        get { return manaPoints }
+        set { manaPoints = newValue }
+    }
+    
+    var maxMana: Double {
+        get { return maxManaPoints }
+        set { maxManaPoints = newValue }
+    }
     
     // MARK: - Initiative and Turn Management
     
@@ -220,6 +245,24 @@ class Character: ObservableObject, CustomStringConvertible {
     
     func isAlive() -> Bool {
         return !isDefeated()
+    }
+    
+    // MARK: - Resource Management
+    
+    func heal(_ amount: Int) {
+        let healingAmount = Double(amount)
+        healthPoints = min(maxHealthPoints, healthPoints + healingAmount)
+        updateStatusBasedOnHealth()
+    }
+    
+    func restoreMana(_ amount: Int) {
+        let restorationAmount = Double(amount)
+        manaPoints = min(maxManaPoints, manaPoints + restorationAmount)
+    }
+    
+    func gainExperience(_ amount: Int) {
+        // Base implementation - can be overridden by Hero subclass
+        print("\(name) gained \(amount) experience")
     }
     
     // MARK: - Display

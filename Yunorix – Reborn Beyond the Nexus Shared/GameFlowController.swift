@@ -27,7 +27,7 @@ class GameFlowController: ObservableObject {
     
     // Game systems
     private var openWorldController: OpenWorldController?
-    private var tutorialController: TutorialController?
+    var tutorialController: TutorialController?
     
     // MARK: - State Management
     
@@ -66,7 +66,7 @@ class GameFlowController: ObservableObject {
         case .openWorld:
             setupOpenWorld()
         case .paused:
-            pauseGame()
+            pauseCurrentGame()
         case .gameOver:
             handleGameOver()
         }
@@ -103,7 +103,7 @@ class GameFlowController: ObservableObject {
         print("🌍 Open world initialized")
     }
     
-    private func pauseGame() {
+    private func pauseCurrentGame() {
         // Pause current game systems
         openWorldController?.stopMovement()
         print("⏸️ Game paused")
@@ -166,7 +166,7 @@ class TutorialController: ObservableObject {
     
     var onTutorialComplete: (() -> Void)?
     
-    private let tutorialSteps = [
+    let tutorialSteps = [
         "Welcome to Yunorix! This is an open world adventure.",
         "Use WASD keys or touch controls to move around the world.",
         "Collect yellow gems to gain magical essence and restore mana.",
@@ -378,10 +378,11 @@ struct SceneKitView: UIViewRepresentable {
     }
     
     private func setupGestures(_ sceneView: SCNView) {
+        #if os(iOS)
         // Pan gesture for movement
         let panGesture = UIPanGestureRecognizer { gesture in
             let translation = gesture.translation(in: sceneView)
-            let velocity = gesture.velocity(in: sceneView)
+            let _ = gesture.velocity(in: sceneView)
             
             switch gesture.state {
             case .changed:
@@ -397,6 +398,7 @@ struct SceneKitView: UIViewRepresentable {
         }
         
         sceneView.addGestureRecognizer(panGesture)
+        #endif
     }
 }
 

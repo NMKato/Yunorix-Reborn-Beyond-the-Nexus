@@ -24,7 +24,25 @@ class CombatManager: ObservableObject {
     private var turnOrder: [Character] = []
     private var currentCharacterIndex: Int = 0
     
+    // Audio manager reference
+    weak var audioManager: AudioManager?
+    
+    init() {
+        print("⚔️ CombatManager initialized")
+    }
+    
+    // MARK: - Input Handling
+    
+    func handleInput(_ inputVector: CGPoint) {
+        // Handle combat input (for manual combat control)
+        print("🎮 Combat input: \(inputVector)")
+    }
+    
     // MARK: - Combat Initialization
+    
+    func initializeCombat(heroes: [Hero], enemies: [Enemy]) {
+        startCombat(heroes: heroes, enemies: enemies)
+    }
     
     func startCombat(heroes: [Hero], enemies: [Enemy]) {
         self.heroes = heroes.filter { $0.isAlive() }
@@ -402,6 +420,23 @@ class CombatManager: ObservableObject {
     
     func getDetailedCombatLog() -> String {
         return combatLog.joined(separator: "\n")
+    }
+    
+    // MARK: - Update Loop
+    
+    func update(deltaTime: TimeInterval) {
+        guard isInCombat else { return }
+        
+        // Process status effects for all characters
+        for character in turnOrder {
+            character.processStatusEffects()
+        }
+        
+        // Remove defeated characters (use existing method)
+        removeDefeatedCharacters()
+        
+        // Check if combat should end
+        _ = checkCombatEnd()
     }
 }
 

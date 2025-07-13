@@ -10,10 +10,8 @@ import Foundation
 
 #if os(macOS)
     import AppKit
-    typealias PlatformColor = NSColor
 #else
     import UIKit
-    typealias PlatformColor = UIColor
 #endif
 
 // MARK: - Player Control System
@@ -202,14 +200,29 @@ class PlayerNode: ObservableObject {
         
         switch type {
         case .fire:
-            projectileGeometry.firstMaterial?.diffuse.contents = PlatformColor.red
-            projectileGeometry.firstMaterial?.emission.contents = PlatformColor.orange
+            #if os(macOS)
+            projectileGeometry.firstMaterial?.diffuse.contents = NSColor.red
+            projectileGeometry.firstMaterial?.emission.contents = NSColor.orange
+            #else
+            projectileGeometry.firstMaterial?.diffuse.contents = UIColor.red
+            projectileGeometry.firstMaterial?.emission.contents = UIColor.orange
+            #endif
         case .ice:
-            projectileGeometry.firstMaterial?.diffuse.contents = PlatformColor.cyan
-            projectileGeometry.firstMaterial?.emission.contents = PlatformColor.blue
+            #if os(macOS)
+            projectileGeometry.firstMaterial?.diffuse.contents = NSColor.cyan
+            projectileGeometry.firstMaterial?.emission.contents = NSColor.blue
+            #else
+            projectileGeometry.firstMaterial?.diffuse.contents = UIColor.cyan
+            projectileGeometry.firstMaterial?.emission.contents = UIColor.blue
+            #endif
         case .lightning:
-            projectileGeometry.firstMaterial?.diffuse.contents = PlatformColor.yellow
-            projectileGeometry.firstMaterial?.emission.contents = PlatformColor.white
+            #if os(macOS)
+            projectileGeometry.firstMaterial?.diffuse.contents = NSColor.yellow
+            projectileGeometry.firstMaterial?.emission.contents = NSColor.white
+            #else
+            projectileGeometry.firstMaterial?.diffuse.contents = UIColor.yellow
+            projectileGeometry.firstMaterial?.emission.contents = UIColor.white
+            #endif
         }
         
         let projectile = SCNNode(geometry: projectileGeometry)
@@ -235,12 +248,12 @@ class PlayerNode: ObservableObject {
         case .fire:
             // Chance to burn
             if Double.random(in: 0...1) < 0.3 {
-                target.applyStatus(.poisoned, duration: 3) // Using poisoned as burn effect
+                target.applyStatus(.poisoned, duration: 3, intensity: 1.0) // Using poisoned as burn effect
             }
         case .ice:
             // Chance to freeze/slow
             if Double.random(in: 0...1) < 0.4 {
-                target.applyStatus(.paralyzed, duration: 2)
+                target.applyStatus(.paralyzed, duration: 2, intensity: 1.0)
             }
         case .lightning:
             // Higher crit chance, already applied

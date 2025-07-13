@@ -10,10 +10,8 @@ import Foundation
 
 #if os(macOS)
     import AppKit
-    typealias PlatformColor = NSColor
 #else
     import UIKit
-    typealias PlatformColor = UIColor
 #endif
 
 // MARK: - Game Scene Manager

@@ -11,7 +11,7 @@ import SceneKit
 // MARK: - Main Game Integration
 
 @MainActor
-class GameController: ObservableObject {
+class GameIntegrationController: ObservableObject {
     
     // MARK: - Core Systems
     
@@ -134,13 +134,13 @@ enum GameMode {
 // MARK: - Main Game View
 
 struct GameView: View {
-    @StateObject private var gameController = GameController()
+    @StateObject private var gameController = GameIntegrationController()
     @State private var showDebugInfo = false
     
     var body: some View {
         ZStack {
             // 3D Scene View
-            SceneKitView(gameController: gameController)
+            GameIntegrationSceneKitView(gameController: gameController)
                 .ignoresSafeArea()
             
             // Game UI Overlay
@@ -193,8 +193,8 @@ struct GameView: View {
 
 // MARK: - SceneKit View Wrapper
 
-struct SceneKitView: View {
-    let gameController: GameController
+struct GameIntegrationSceneKitView: View {
+    let gameController: GameIntegrationController
     
     var body: some View {
         SceneKitViewRepresentable(gameController: gameController)
@@ -204,7 +204,7 @@ struct SceneKitView: View {
 // MARK: - SceneKit View Representable
 
 struct SceneKitViewRepresentable {
-    let gameController: GameController
+    let gameController: GameIntegrationController
 }
 
 #if os(macOS)
@@ -259,9 +259,9 @@ extension SceneKitViewRepresentable: UIViewRepresentable {
 // MARK: - SceneKit View Coordinator
 
 class Coordinator: NSObject, SCNSceneRendererDelegate {
-    private let gameController: GameController
+    private let gameController: GameIntegrationController
     
-    init(_ gameController: GameController) {
+    init(_ gameController: GameIntegrationController) {
         self.gameController = gameController
     }
     
@@ -275,7 +275,7 @@ class Coordinator: NSObject, SCNSceneRendererDelegate {
 // MARK: - Menu View
 
 struct MenuView: View {
-    let gameController: GameController
+    let gameController: GameIntegrationController
     
     var body: some View {
         VStack(spacing: 30) {

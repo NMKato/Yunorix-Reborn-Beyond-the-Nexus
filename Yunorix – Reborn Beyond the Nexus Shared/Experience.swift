@@ -5,6 +5,7 @@
 //  Generated from Reality Composer
 //
 
+#if canImport(RealityKit) && false  // Temporarily disabled for iOS build
 import RealityKit
 import Combine
 
@@ -23,7 +24,7 @@ public class Experience {
                 )]
             )
             
-            self.anchoring = AnchoringComponent(.world(transform: .identity))
+            self.anchoring = AnchoringComponent(.world(transform: simd_float4x4(1)))
             self.collision = CollisionComponent(shapes: [ShapeResource.generateBox(size: [0.1, 0.1, 0.1])])
             self.physicsBody = PhysicsBodyComponent(
                 massProperties: .default,
@@ -50,7 +51,7 @@ public class Experience {
                 materials: [material]
             )
             
-            self.anchoring = AnchoringComponent(.world(transform: .identity))
+            self.anchoring = AnchoringComponent(.world(transform: simd_float4x4(1)))
             
             // Add floating animation
             addFloatingAnimation()
@@ -69,14 +70,14 @@ public class Experience {
                 translation: SIMD3<Float>(0, -0.02, 0)
             )
             
-            let upAnimation = FromToByAnimation(
+            let upAnimation = FromToByAnimation<Transform>(
                 name: "floatUp",
                 from: .transform(floatDown),
                 to: .transform(floatUp),
                 duration: 2.0,
                 timing: .easeInOut,
                 isAdditive: true,
-                repeatMode: .pingPong,
+                repeatMode: .autoReverse,
                 fillMode: .both
             )
             
@@ -98,7 +99,7 @@ public class Experience {
                 materials: [material]
             )
             
-            self.anchoring = AnchoringComponent(.world(transform: .identity))
+            self.anchoring = AnchoringComponent(.world(transform: simd_float4x4(1)))
             
             // Add pulsing glow effect
             addGlowAnimation()
@@ -117,14 +118,14 @@ public class Experience {
                 translation: SIMD3<Float>(0, 0, 0)
             )
             
-            let pulseAnimation = FromToByAnimation(
+            let pulseAnimation = FromToByAnimation<Transform>(
                 name: "pulse",
                 from: .transform(scaleDown),
                 to: .transform(scaleUp),
                 duration: 1.5,
                 timing: .easeInOut,
                 isAdditive: false,
-                repeatMode: .pingPong,
+                repeatMode: .autoReverse,
                 fillMode: .both
             )
             
@@ -151,7 +152,7 @@ public class Experience {
                 return triangle.reversed()
             } as? MeshResource ?? self.model!.mesh
             
-            self.anchoring = AnchoringComponent(.world(transform: .identity))
+            self.anchoring = AnchoringComponent(.world(transform: simd_float4x4(1)))
         }
     }
     
@@ -261,7 +262,7 @@ extension Experience {
             let ringMesh = MeshResource.generateSphere(radius: 0.8)
             self.model = ModelComponent(mesh: ringMesh, materials: [ringMaterial])
             
-            self.anchoring = AnchoringComponent(.world(transform: .identity))
+            self.anchoring = AnchoringComponent(.world(transform: simd_float4x4(1)))
             
             // Add rotation animation
             addPortalAnimation()
@@ -274,7 +275,7 @@ extension Experience {
                 translation: SIMD3<Float>(0, 0, 0)
             )
             
-            let rotationAnimation = FromToByAnimation(
+            let rotationAnimation = FromToByAnimation<Transform>(
                 name: "portalRotation",
                 by: .transform(rotation),
                 duration: 4.0,
@@ -305,7 +306,7 @@ extension Experience {
                 materials: [material]
             )
             
-            self.anchoring = AnchoringComponent(.world(transform: .identity))
+            self.anchoring = AnchoringComponent(.world(transform: simd_float4x4(1)))
             self.collision = CollisionComponent(shapes: [ShapeResource.generateBox(size: [0.2, 0.2, 0.2])])
             
             // Add bobbing animation
@@ -319,13 +320,13 @@ extension Experience {
                 translation: SIMD3<Float>(0, 0.1, 0)
             )
             
-            let bobAnimation = FromToByAnimation(
+            let bobAnimation = FromToByAnimation<Transform>(
                 name: "bob",
                 by: .transform(bobUp),
                 duration: 1.0,
                 timing: .easeInOut,
                 isAdditive: true,
-                repeatMode: .pingPong,
+                repeatMode: .autoReverse,
                 fillMode: .both
             )
             
@@ -369,3 +370,21 @@ public class RealityComposerSceneFactory {
         return portal
     }
 }
+
+#else
+// Fallback for platforms without RealityKit
+@available(iOS 13.0, macOS 10.15, *)
+public class Experience {
+    public static func loadBox() throws -> Any? { return nil }
+    public static func loadMenuScene() throws -> Any? { return nil }
+    public static func loadOpenWorldEnvironment() throws -> Any? { return nil }
+}
+
+@available(iOS 13.0, macOS 10.15, *)
+public class RealityComposerSceneFactory {
+    public static func createMenuScene() -> Any? { return nil }
+    public static func createOpenWorldScene() -> Any? { return nil }
+    public static func createCollectible(at position: Any) -> Any? { return nil }
+    public static func createPortal(at position: Any) -> Any? { return nil }
+}
+#endif

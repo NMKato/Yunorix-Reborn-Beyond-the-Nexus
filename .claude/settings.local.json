@@ -6,7 +6,10 @@
       "Bash(open:*)",
       "Bash(swift:*)",
       "Bash(rm:*)",
-      "Bash(timeout 60 xcodebuild:*)"
+      "Bash(timeout 60 xcodebuild:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(\"/Users/4gi.tv/Documents/Yunorix – Reborn Beyond the Nexus/BACKUP_UNUSED_ASSETS.sh\")"
     ],
     "deny": []
   }

@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
-import RealityKit
 import SceneKit
+
+#if canImport(RealityKit)
+import RealityKit
+#endif
 
 struct MainMenuScreen: View {
     @State private var selectedTab = 0
@@ -80,9 +83,19 @@ struct MainMenuScreen: View {
             )
             
             // Reality Composer Scene Background
+            #if canImport(RealityKit)
             RealityKitView()
                 .opacity(0.6)
                 .blur(radius: 1)
+            #else
+            // Fallback gradient background
+            LinearGradient(
+                colors: [.clear, .purple.opacity(0.2), .clear],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .opacity(0.6)
+            #endif
             
             // Floating particles
             particleSystemView
@@ -297,14 +310,20 @@ struct MenuButton: View {
 }
 
 // MARK: - RealityKit View for 3D Background
+#if canImport(RealityKit)
 struct RealityKitView: UIViewRepresentable {
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
         
         // Load Reality Composer scene
-        if let scene = try? Experience.loadBox() {
-            arView.scene.anchors.append(scene)
+        #if canImport(RealityKit) && !DEBUG
+        do {
+            let box = try Experience.loadBox()
+            arView.scene.anchors.append(box)
+        } catch {
+            print("Failed to load RealityKit scene: \(error)")
         }
+        #endif
         
         // Add environmental lighting
         arView.environment.lighting.intensityExponent = 0.25
@@ -317,6 +336,7 @@ struct RealityKitView: UIViewRepresentable {
         // Update if needed
     }
 }
+#endif
 
 // MARK: - Supporting Views
 struct CharacterSelectionView: View {

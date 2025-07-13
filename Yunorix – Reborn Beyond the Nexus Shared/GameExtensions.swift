@@ -7,10 +7,22 @@
 
 import SwiftUI
 import SceneKit
+
+#if os(iOS)
 import UIKit
+typealias PlatformColor = UIColor
+typealias PlatformFont = UIFont
+typealias PlatformView = UIView
+#elseif os(macOS)
+import Cocoa
+typealias PlatformColor = NSColor
+typealias PlatformFont = NSFont
+typealias PlatformView = NSView
+#endif
 
-// MARK: - UIPanGestureRecognizer Extension
+// MARK: - Platform-Specific Extensions
 
+#if os(iOS)
 extension UIPanGestureRecognizer {
     convenience init(action: @escaping (UIPanGestureRecognizer) -> Void) {
         self.init()
@@ -41,6 +53,7 @@ extension UIPanGestureRecognizer {
         }
     }
 }
+#endif
 
 // MARK: - SCNVector3 Extensions
 
@@ -98,17 +111,7 @@ extension Animation {
     static let gameSpring = Animation.spring(response: 0.6, dampingFraction: 0.8)
 }
 
-// MARK: - Platform Compatibility
-
-#if os(iOS)
-typealias PlatformColor = UIColor
-typealias PlatformFont = UIFont
-typealias PlatformView = UIView
-#elseif os(macOS)
-typealias PlatformColor = NSColor
-typealias PlatformFont = NSFont
-typealias PlatformView = NSView
-#endif
+// MARK: - Platform Compatibility - Already defined above
 
 // MARK: - Game Constants
 
@@ -243,101 +246,7 @@ class SoundManager: ObservableObject {
     }
 }
 
-// MARK: - Game Settings
-
-class GameSettings: ObservableObject {
-    static let shared = GameSettings()
-    
-    @Published var graphicsQuality: GraphicsQuality = .high
-    @Published var showDebugInfo: Bool = false
-    @Published var invertCameraControls: Bool = false
-    @Published var cameraSensitivity: Float = 1.0
-    @Published var autoSaveEnabled: Bool = true
-    @Published var autoSaveInterval: TimeInterval = 300 // 5 minutes
-    
-    private init() {
-        loadSettings()
-    }
-    
-    func saveSettings() {
-        let defaults = UserDefaults.standard
-        defaults.set(graphicsQuality.rawValue, forKey: "GraphicsQuality")
-        defaults.set(showDebugInfo, forKey: "ShowDebugInfo")
-        defaults.set(invertCameraControls, forKey: "InvertCameraControls")
-        defaults.set(cameraSensitivity, forKey: "CameraSensitivity")
-        defaults.set(autoSaveEnabled, forKey: "AutoSaveEnabled")
-        defaults.set(autoSaveInterval, forKey: "AutoSaveInterval")
-    }
-    
-    func loadSettings() {
-        let defaults = UserDefaults.standard
-        
-        if let qualityRaw = GraphicsQuality(rawValue: defaults.string(forKey: "GraphicsQuality") ?? "high") {
-            graphicsQuality = qualityRaw
-        }
-        
-        showDebugInfo = defaults.bool(forKey: "ShowDebugInfo")
-        invertCameraControls = defaults.bool(forKey: "InvertCameraControls")
-        cameraSensitivity = defaults.float(forKey: "CameraSensitivity")
-        autoSaveEnabled = defaults.bool(forKey: "AutoSaveEnabled")
-        autoSaveInterval = defaults.double(forKey: "AutoSaveInterval")
-        
-        if cameraSensitivity == 0 {
-            cameraSensitivity = 1.0
-        }
-        if autoSaveInterval == 0 {
-            autoSaveInterval = 300
-        }
-    }
-    
-    func resetToDefaults() {
-        graphicsQuality = .high
-        showDebugInfo = false
-        invertCameraControls = false
-        cameraSensitivity = 1.0
-        autoSaveEnabled = true
-        autoSaveInterval = 300
-        saveSettings()
-    }
-}
-
-enum GraphicsQuality: String, CaseIterable {
-    case low = "low"
-    case medium = "medium"
-    case high = "high"
-    case ultra = "ultra"
-    
-    var displayName: String {
-        switch self {
-        case .low: return "Low"
-        case .medium: return "Medium"
-        case .high: return "High"
-        case .ultra: return "Ultra"
-        }
-    }
-    
-    var particleCount: Int {
-        switch self {
-        case .low: return 10
-        case .medium: return 20
-        case .high: return 30
-        case .ultra: return 50
-        }
-    }
-    
-    var shadowQuality: Bool {
-        return self != .low
-    }
-    
-    var antialiasingMode: SCNAntialiasingMode {
-        switch self {
-        case .low: return .none
-        case .medium: return .multisampling2X
-        case .high: return .multisampling4X
-        case .ultra: return .multisampling4X
-        }
-    }
-}
+// MARK: - Game Settings (imported from GameMaster)
 
 // MARK: - Performance Monitor
 

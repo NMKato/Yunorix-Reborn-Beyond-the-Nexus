@@ -10,10 +10,8 @@ import SceneKit
 
 #if os(macOS)
     import AppKit
-    typealias PlatformColor = NSColor
 #else
     import UIKit
-    typealias PlatformColor = UIColor
 #endif
 
 // MARK: - Game UI Manager
@@ -47,15 +45,59 @@ class UIManager: ObservableObject {
     @Published var gameMessages: [GameMessage] = []
     @Published var showMessages: Bool = true
     
+    // Manager references
+    weak var heroManager: HeroManager?
+    weak var combatManager: CombatManager?
+    weak var inventoryManager: InventoryManager?
+    
     // MARK: - Initialization
     
     init() {
         setupInitialMessages()
+        print("📱 UIManager initialized")
     }
     
     private func setupInitialMessages() {
         addMessage("🎮 Welcome to Yunorix - Reborn Beyond the Nexus!", type: .system)
         addMessage("⚔️ Use WASD to move, click to select targets", type: .info)
+    }
+    
+    // MARK: - Scene UI Setup
+    
+    func setupUIForScene(_ sceneType: GameSceneType) {
+        switch sceneType {
+        case .mainMenu:
+            showPlayerStats = false
+            showActionButtons = false
+            showMiniMap = false
+            addMessage("📋 Main Menu", type: .system)
+            
+        case .gameWorld:
+            showPlayerStats = true
+            showActionButtons = true
+            showMiniMap = true
+            isInCombat = false
+            addMessage("🌍 Entered Open World", type: .system)
+            
+        case .combat:
+            showPlayerStats = true
+            showActionButtons = true
+            showMiniMap = false
+            isInCombat = true
+            addMessage("⚔️ Combat Started!", type: .combat)
+            
+        case .inventory:
+            showInventory = true
+            addMessage("🎒 Inventory Opened", type: .info)
+            
+        case .settings:
+            addMessage("⚙️ Settings", type: .system)
+            
+        case .credits:
+            addMessage("👥 Credits", type: .system)
+        }
+        
+        print("📱 UI configured for scene: \(sceneType.displayName)")
     }
     
     // MARK: - Message System

@@ -10,11 +10,9 @@ import SceneKit
 
 #if os(macOS)
     import AppKit
-    typealias PlatformColor = NSColor
     typealias PlatformImage = NSImage
 #else
     import UIKit
-    typealias PlatformColor = UIColor
     typealias PlatformImage = UIImage
 #endif
 
@@ -87,7 +85,9 @@ class AssetManager: ObservableObject {
     
     private var loadedAssets: [String: SCNNode] = [:]
     private var assetInventory: [GameAsset] = []
-    private let assetBasePath = "/Users/4gi.tv/Documents/Yunorix – Reborn Beyond the Nexus/grafic objekts/"
+    // Asset paths updated - external assets removed for optimization
+    private let assetBasePath = ""  // No external assets folder
+    private let internalAssetsPath = "Art.scnassets/"  // Use built-in assets only
     
     private init() {
         scanAssets()
@@ -98,16 +98,56 @@ class AssetManager: ObservableObject {
     private func scanAssets() {
         print("🔍 Scanning assets...")
         
-        // Nature Assets
-        scanNatureAssets()
+        // External assets removed for optimization (263MB saved!)
+        // Using built-in procedural assets only
+        print("📦 External asset packs removed to reduce app size")
+        print("🎯 Using procedural fallback system")
         
-        // Character Assets
-        scanCharacterAssets()
+        // Create minimal built-in asset inventory
+        createOptimizedAssetInventory()
         
-        // UI Assets
-        scanUIAssets()
+        print("📦 Loaded \(assetInventory.count) optimized assets")
+    }
+    
+    private func createOptimizedAssetInventory() {
+        // Create essential game assets using procedural generation
+        // This replaces the 263MB external asset library
         
-        print("📦 Found \(assetInventory.count) assets")
+        // Essential nature assets (procedural)
+        assetInventory.append(GameAsset(
+            name: "tree_procedural",
+            category: .nature,
+            type: .tree(.defaultTree),
+            path: "",  // No external file
+            scale: 3.0
+        ))
+        
+        assetInventory.append(GameAsset(
+            name: "rock_procedural", 
+            category: .nature,
+            type: .rock(.medium),
+            path: "",
+            scale: 1.5
+        ))
+        
+        // Essential character assets (procedural)
+        assetInventory.append(GameAsset(
+            name: "player_procedural",
+            category: .character,
+            type: .character(.hero),
+            path: "",
+            scale: 1.8
+        ))
+        
+        assetInventory.append(GameAsset(
+            name: "enemy_procedural",
+            category: .character, 
+            type: .character(.enemy),
+            path: "",
+            scale: 1.8
+        ))
+        
+        print("🎯 Created \(assetInventory.count) procedural assets")
     }
     
     private func scanNatureAssets() {
@@ -256,7 +296,7 @@ class AssetManager: ObservableObject {
         return rootNode.clone()
     }
     
-    private func createFallbackNode(for asset: GameAsset) -> SCNNode {
+    func createFallbackNode(for asset: GameAsset) -> SCNNode {
         let node = SCNNode()
         
         switch asset.type {
@@ -313,7 +353,7 @@ class AssetManager: ObservableObject {
                     }
                 }
             }
-            return true
+            // return true  // void return type for enumerateChildNodes
         }
     }
     

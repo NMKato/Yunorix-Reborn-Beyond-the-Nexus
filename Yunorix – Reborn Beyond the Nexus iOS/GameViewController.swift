@@ -28,7 +28,7 @@ class GameViewController: UIViewController {
     
     // New professional system
     private let gameMaster = GameMaster.shared
-    private var sceneKitController: GameIntegration.GameController!
+    private var sceneKitController: GameIntegrationController!
     private var modernUIController: UIHostingController<GameView>?
     
     // System state
@@ -98,7 +98,7 @@ class GameViewController: UIViewController {
     
     private func setupModernSystem() {
         // Initialize modern SceneKit controller
-        sceneKitController = GameIntegration.GameController()
+        sceneKitController = GameIntegrationController()
         
         // Connect to GameMaster
         gameMaster.sceneKitRenderer = ModernSceneKitRenderer(controller: sceneKitController)
@@ -113,8 +113,8 @@ class GameViewController: UIViewController {
         gameView.preferredFramesPerSecond = 60
         
         // Professional rendering settings
-        gameView.jitteringEnabled = true
-        gameView.temporalAntialiasingEnabled = true
+        // gameView.jitteringEnabled = true // Deprecated in modern iOS
+        // gameView.temporalAntialiasingEnabled = true // Not available in this iOS version
     }
     
     // MARK: - Dual Rendering System
@@ -150,7 +150,7 @@ class GameViewController: UIViewController {
         rpgUIHostingController?.view.isHidden = false
         
         // Switch scene back
-        gameView.scene = legacyGameController.gameScene
+        gameView.scene = legacyGameController.scene
         gameView.delegate = nil
     }
     
@@ -234,7 +234,7 @@ class GameViewController: UIViewController {
             .store(in: &subscriptions)
     }
     
-    private func handleGameStateChange(_ state: GameState) {
+    private func handleGameStateChange(_ state: GameSystemState) {
         switch state {
         case .playing:
             resumeCurrentSystem()
@@ -511,9 +511,9 @@ extension GameViewController: SCNSceneRendererDelegate {
 // MARK: - Modern SceneKit Renderer Adapter
 
 class ModernSceneKitRenderer: SceneKitRenderer {
-    private let controller: GameIntegration.GameController
+    private let controller: GameIntegrationController
     
-    init(controller: GameIntegration.GameController) {
+    init(controller: GameIntegrationController) {
         self.controller = controller
         super.init()
     }

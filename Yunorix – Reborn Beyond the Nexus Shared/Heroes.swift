@@ -93,7 +93,7 @@ class Hero: Character, Attackable, PlayerControlled {
     
     // MARK: - Experience and Leveling
     
-    func gainExperience(_ amount: Int) {
+    override func gainExperience(_ amount: Int) {
         experience += amount
         checkLevelUp()
     }
@@ -125,20 +125,27 @@ class Mage: Hero, ManaUser, Healable, AreaAttacker, StatusEffectCaster {
     
     // MARK: - Mage Properties
     
-    @Published var mana: Double
-    @Published var maxMana: Double
     var spellPower: Double
     var magicalResistance: Double = 0.3
     var availableStatusEffects: [CharacterStatus] = [.cursed, .paralyzed]
     
+    // MARK: - ManaUser Protocol Compliance
+    
+    var mana: Double {
+        get { return currentMana }
+        set { currentMana = newValue }
+    }
+    
     // MARK: - Initialization
     
     init(name: String) {
-        self.maxMana = 100
-        self.mana = 100
         self.spellPower = 15
         
         super.init(name: name, maxHP: 80, attack: 12, defense: 5)
+        
+        // Set mana after super.init
+        self.maxManaPoints = 100
+        self.manaPoints = 100
         
         self.attacks = ["Feuerball", "Eisattacke", "Donnerschlag", "Meteor"]
         criticalChance = 0.15
@@ -147,17 +154,17 @@ class Mage: Hero, ManaUser, Healable, AreaAttacker, StatusEffectCaster {
     // MARK: - Mana Management
     
     func consumeMana(_ amount: Double) -> Bool {
-        guard mana >= amount else { return false }
-        mana -= amount
+        guard currentMana >= amount else { return false }
+        currentMana -= amount
         return true
     }
     
     func regenerateMana(_ amount: Double) {
-        mana = min(mana + amount, maxMana)
+        currentMana = min(currentMana + amount, maxMana)
     }
     
     func hasEnoughMana(_ requiredMana: Double) -> Bool {
-        return mana >= requiredMana
+        return currentMana >= requiredMana
     }
     
     override func processStatusEffects() {
